@@ -252,7 +252,7 @@ begin
 	      --slv_reg4 <= (others => '0'); -- W To ARM
 	      slv_reg5 <= (others => '0');
 	      slv_reg6 <= (others => '0');
-	      slv_reg7 <= (others => '0');
+	      slv_reg7 <= (others => '0'); -- R From ARM
 	    else
 	      loc_addr := axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
 	      if (slv_reg_wren = '1') then
@@ -467,15 +467,15 @@ begin
     PWM_Manager_Core_inst : PWM_Manager_Core 
     port map(
         PWM_RC         => S_PWM_RC,
-        r_PWM_ARM      => slv_reg0(15 downto 0),
+        r_PWM_ARM      => slv_reg7(15 downto 0),
         MODE           => S_MODE,
         v_PWM_INV      => inverted_PWM_value,
-        r_sel_L_inv    => slv_reg0(16),
-        r_sel_R_inv    => slv_reg0(17),
+        r_sel_L_inv    => slv_reg0(0),
+        r_sel_R_inv    => slv_reg0(1),
         r_PWM_ARM_L    => slv_reg2(15 downto 0),
         r_PWM_ARM_R    => slv_reg2(31 downto 16),
-        r_sel_L_direct => slv_reg0(18),
-        r_sel_R_direct => slv_reg0(19),
+        r_sel_L_direct => slv_reg0(2),
+        r_sel_R_direct => slv_reg0(3),
         PWM_L          => PWM_L_Value,
         PWM_R          => PWM_R_Value,
         r_min_PWM_D    => slv_reg1(15 downto 0),

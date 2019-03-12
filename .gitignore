@@ -81,6 +81,9 @@ SDK Files
 *.metadata/
 standalone_bsp_0/
 webtalk/
+RemoteSystemsTempFiles/
+hw_platform/
+VIVADO/
 !*.hdf
 !.cproject
 !.project

@@ -36,6 +36,7 @@
 	#define r_PWM_CONF  	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG1
     #define r_CONF_GEST 	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG0
 	#define r_Direct_Values DIR_BASE_IP_PWM_MANAGER + OFFSET_REG2
+	#define r_PWM_ARM	 	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG7
 #endif
 
 #ifdef DIR_BASE_IP_MODE_MANAGER
@@ -60,16 +61,17 @@ typedef union _registro_C
 	u32 regbase;
 
 	struct{
-		u16 LSR;
-		u8 	reg16 : 1;
-		u8 	reg17 : 1;
-		u8 	reg18 : 1;
-		u8 	reg19 : 1;
-		u8 	reg20 : 1;
-		u8 	reg21 : 1;
-		u8 	reg22 : 1;
-		u8 	reg23 : 1;
+		u8 	reg0 : 1;
+		u8 	reg1 : 1;
+		u8 	reg2 : 1;
+		u8 	reg3 : 1;
+		u8 	reg4 : 1;
+		u8 	reg5 : 1;
+		u8 	reg6 : 1;
+		u8 	reg7 : 1;
 		u8 	byte;
+
+		u16 MSR;
 	}registros_u16;
 }registro_C_u32;
 
@@ -91,7 +93,7 @@ int main()
     //Xil_Out16(DIR_BASE_IP_CAPTURA_PWM + OFFSET_REG14,500);
     //Xil_Out16(DIR_BASE_IP_CAPTURA_PWM + OFFSET_REG15,4000);
 
-    registro_u32 PWM_Config, PWM_IN, PWM_OUT, PWM_Direct, PWM_MODE;
+    registro_u32 PWM_Config, PWM_IN, PWM_OUT, PWM_Direct, PWM_MODE, PWM_ARM;
     PWM_Config.registros_u16.LSR = 1000;
     PWM_Config.registros_u16.MSR = 2000;
     Xil_Out32(r_PWM_CONF,PWM_Config.regbase);
@@ -104,12 +106,15 @@ int main()
     PWM_MODE.registros_u16.MSR = 1940;
     Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);
 
+
+    PWM_ARM.registros_u16.LSR = 1750; // Valor de PWM escrito desde ARM
+    Xil_Out32(r_PWM_ARM,PWM_ARM.regbase);
+
     registro_C_u32 Config_Etapas;
-    Config_Etapas.registros_u16.LSR = 1750; // Valor de PWM escrito desde ARM
-    Config_Etapas.registros_u16.reg16 = FALSE; // Canal L invertido
-    Config_Etapas.registros_u16.reg17 = TRUE; // Canal R invertido
-    Config_Etapas.registros_u16.reg18 = TRUE; //Canal L directo
-    Config_Etapas.registros_u16.reg19 = TRUE; //Canal R directo
+    Config_Etapas.registros_u16.reg0 = FALSE; // Canal L invertido
+    Config_Etapas.registros_u16.reg1 = TRUE; // Canal R invertido
+    Config_Etapas.registros_u16.reg2 = FALSE; //Canal L directo
+    Config_Etapas.registros_u16.reg3 = TRUE; //Canal R directo
     Xil_Out32(r_CONF_GEST,Config_Etapas.regbase);
 
 
