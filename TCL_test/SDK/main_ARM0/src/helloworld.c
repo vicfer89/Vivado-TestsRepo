@@ -4,6 +4,8 @@
 #include "xgpio.h"
 #include "xparameters.h"
 
+#include "lib_IP_PWM_Manager.h"
+
 #define OFFSET_REG0						0X00
 #define OFFSET_REG1						0x04
 #define OFFSET_REG2						0x08
@@ -26,25 +28,14 @@
 #define OFFSET_REG19					0x4C
 
 #define CPU0_10HZ_0_IRQ_ID 				XPAR_FABRIC_ZYNQ_SYSTEMS_FIT_TIMER_10HZ_INTERRUPT_INTR
-//#define DIR_BASE_IP_CAPTURA_PWM			XPAR_PWM_CAPTURER_0_S00_AXI_BASEADDR
-//#define DIR_BASE_IP_VECTOR				XPAR_VECTOR_TO_AXI_0_S00_AXI_BASEADDR
 #define DIR_BASE_IP_PWM_MANAGER 		XPAR_PWM_MANAGER_0_S00_AXI_BASEADDR
 #define DIR_BASE_IP_MODE_MANAGER		XPAR_MODEMANAGER_0_S00_AXI_BASEADDR
-#ifdef DIR_BASE_IP_PWM_MANAGER
-	#define v_PWM_IN    	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG3
-	#define v_PWM_OUT   	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG4
-	#define r_PWM_CONF  	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG1
-    #define r_CONF_GEST 	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG0
-	#define r_Direct_Values DIR_BASE_IP_PWM_MANAGER + OFFSET_REG2
-	#define r_PWM_ARM	 	DIR_BASE_IP_PWM_MANAGER + OFFSET_REG7
-#endif
 
 #ifdef DIR_BASE_IP_MODE_MANAGER
 	#define r_PWM_Mode		DIR_BASE_IP_MODE_MANAGER + OFFSET_REG0
 #endif
 
-#define TRUE  0x1
-#define FALSE 0x0
+
 
 typedef union _registro
 {
@@ -56,31 +47,13 @@ typedef union _registro
 	}registros_u16;
 }registro_u32;
 
-typedef union _registro_C
-{
-	u32 regbase;
-
-	struct{
-		u8 	reg0 : 1;
-		u8 	reg1 : 1;
-		u8 	reg2 : 1;
-		u8 	reg3 : 1;
-		u8 	reg4 : 1;
-		u8 	reg5 : 1;
-		u8 	reg6 : 1;
-		u8 	reg7 : 1;
-		u8 	byte;
-
-		u16 MSR;
-	}registros_u16;
-}registro_C_u32;
-
-//void print(char *str);
 void int_handler_0_10HZ(void *data, u8 TmrCtrNumber);
 void init_GPIO(void);
+void init_interrupt(void);
 
 static XScuGic IntcInstance; // Instancia para manejador de interrupciones
 static XGpio Gpio; /* The Instance of the GPIO Driver */
+static handler_PWMManager CH01;
 
 volatile u8 flag_TMR10Hz = 0;
 
@@ -90,33 +63,25 @@ int main()
     init_interrupt();
     init_GPIO();
 
-    //Xil_Out16(DIR_BASE_IP_CAPTURA_PWM + OFFSET_REG14,500);
-    //Xil_Out16(DIR_BASE_IP_CAPTURA_PWM + OFFSET_REG15,4000);
-
-    registro_u32 PWM_Config, PWM_IN, PWM_OUT, PWM_Direct, PWM_MODE, PWM_ARM;
-    PWM_Config.registros_u16.LSR = 1000;
-    PWM_Config.registros_u16.MSR = 2000;
-    Xil_Out32(r_PWM_CONF,PWM_Config.regbase);
-
-    PWM_Direct.registros_u16.LSR = 1500; // Canal L
-    PWM_Direct.registros_u16.MSR = 1500; // Canal R
-    Xil_Out32(r_Direct_Values, PWM_Direct.regbase);
-
+    registro_u32 PWM_MODE;
     PWM_MODE.registros_u16.LSR = 1100;
-    PWM_MODE.registros_u16.MSR = 1940;
-    Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);
+	PWM_MODE.registros_u16.MSR = 1940;
+	Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);
 
+    init_IP_PWM_Manager(&CH01,  DIR_BASE_IP_PWM_MANAGER);
+    set_Min_PWM(&CH01, 1000);
+    set_Max_PWM(&CH01, 2000);
 
-    PWM_ARM.registros_u16.LSR = 1750; // Valor de PWM escrito desde ARM
-    Xil_Out32(r_PWM_ARM,PWM_ARM.regbase);
+    set_Direct_Value(&CH01, ch_Right, 1005);
+    set_Direct_Value(&CH01, ch_Left, 1015);
 
-    registro_C_u32 Config_Etapas;
-    Config_Etapas.registros_u16.reg0 = FALSE; // Canal L invertido
-    Config_Etapas.registros_u16.reg1 = TRUE; // Canal R invertido
-    Config_Etapas.registros_u16.reg2 = FALSE; //Canal L directo
-    Config_Etapas.registros_u16.reg3 = TRUE; //Canal R directo
-    Xil_Out32(r_CONF_GEST,Config_Etapas.regbase);
+    set_Inversion(&CH01, ch_Right, channel_Inverted);
+    set_Inversion(&CH01, ch_Left, channel_Inverted);
 
+    set_Output_Type(&CH01, ch_Right, pwm_out_processed);
+    set_Output_Type(&CH01, ch_Left, pwm_out_processed);
+
+    set_ARM_Actuation(&CH01, 1750);
 
     printf("Main loop:\n\r");
 
@@ -126,12 +91,11 @@ int main()
 		{
 			flag_TMR10Hz = 0;
 
-			//u16 CH0C = Xil_In16(DIR_BASE_IP_CAPTURA_PWM + OFFSET_REG0);
-			//u16 CH0V = Xil_In16(DIR_BASE_IP_VECTOR + OFFSET_REG0);
-			PWM_IN.regbase = Xil_In32(v_PWM_IN);
-			PWM_OUT.regbase = Xil_In32(v_PWM_OUT);
-
-			printf(" PWMC \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",PWM_IN.registros_u16.LSR,PWM_IN.registros_u16.MSR,PWM_OUT.registros_u16.LSR, PWM_OUT.registros_u16.MSR);
+			printf(" PWMC \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+					get_RC_Input_Value(&CH01),
+					get_Inverter_Value(&CH01),
+					get_Output_Value(&CH01,ch_Left),
+					get_Output_Value(&CH01,ch_Right));
 		}
     }
 

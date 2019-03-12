@@ -28,3 +28,7 @@ Para importar un diseño HW por medio de un script TCL generado en Vivado será 
 
 Una vez realizado este proceso, se seguirán los pasos estándar para la compilación de SW.
 
+## TODO: Añadir fichero de Constraints y script de enlace
+
+
+
