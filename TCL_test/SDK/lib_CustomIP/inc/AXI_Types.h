@@ -114,4 +114,38 @@ typedef union _AXI_Register
 
 }AXI_Register;
 
+/** \var typedef enum IP_registers
+    \brief Enumerated where registers had been coded to provide access.
+
+    Codes slv_reg registers which are into the peripheral. For more information, see
+    \var typedef struct AXI_Registers.
+*/
+typedef enum _IP_registers{
+	slv_reg0 = 0,
+	slv_reg1,
+	slv_reg2,
+	slv_reg3,
+	slv_reg4,
+	slv_reg5,
+	slv_reg6,
+	slv_reg7,
+	slv_reg8,
+	slv_reg9,
+	slv_reg10,
+	slv_reg11,
+	slv_reg12,
+	slv_reg13,
+	slv_reg14,
+	slv_reg15,
+	slv_reg16,
+	slv_reg17,
+	slv_reg18,
+	slv_reg19,
+	slv_reg20,
+	slv_reg21,
+	slv_reg22,
+	slv_reg23,
+	slv_reg24,
+	slv_reg25
+}IP_registers;
 #endif /* AXI_TYPES_H_ */

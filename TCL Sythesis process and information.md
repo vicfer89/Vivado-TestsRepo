@@ -1,6 +1,6 @@
 # Vivado TCL Scripts
 
-
+Documento de información acerca de generación, carga y manejo de lenguaje TCL para vivado.
 
 ## Importación de diseño HW por medio de TCL
 
@@ -27,6 +27,19 @@ Para importar un diseño HW por medio de un script TCL generado en Vivado será 
 6. Generar bitstream y exportar HDF.
 
 Una vez realizado este proceso, se seguirán los pasos estándar para la compilación de SW.
+
+## Añadir repositorio desde TCL
+
+Se puede añadir un repositorio desde TCL, para lo cual se empleará el siguiente código:
+
+```tcl
+#[custom_repo_path]: repositorio de IP custom a incluir
+#[current_project]: indica que será para el proyecto actual
+set_property ip_repo_paths {[custom_repo_path]} [current_project]
+update_ip_catalog
+```
+
+Con esto se añadirá al repositorio del proyecto abierto los IP contenidos en `[custom_repo_path]`para poder usarlos y cargar el TCL con el diseño de alto nivel.
 
 ## TODO: Añadir fichero de Constraints y script de enlace
 

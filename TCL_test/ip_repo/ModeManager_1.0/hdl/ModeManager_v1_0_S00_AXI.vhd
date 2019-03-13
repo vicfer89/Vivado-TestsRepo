@@ -390,20 +390,13 @@ begin
 
 
     -- Add user logic here
-    
-    -- RECUPERACION DE VALORES ARM <-> FPGA
---    process (S_AXI_ACLK)
---       begin
---           if rising_edge(S_AXI_ACLK) then
---                valueModeRx <= value;
---            end if;
---    end process;        
-    valueModeRx <= value;
+        valueModeRx <= value;
     -- Actualizacion de datos desde y hacia el ARM
     process( S_AXI_ACLK )
         begin
             if rising_edge(S_AXI_ACLK) then
                 slv_reg1(15 downto 0)  <= valueModeRx(15 downto 0); --DEBUG 
+                slv_reg1(17 downto 16) <= estadoModo(1 downto 0); --DEBUG
                 fromARM_PWM_man_value(15 downto 0) <= slv_reg0(15 downto 0); --CONFIG
                 fromARM_PWM_auto_value(15 downto 0) <= slv_reg0(31 downto 16); --CONFIG
             end if;

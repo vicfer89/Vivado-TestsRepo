@@ -30,6 +30,7 @@
 								</option>
 								<option id="xilinx.gnu.compiler.dircategory.includes.1293873198" name="Include Paths" superClass="xilinx.gnu.compiler.dircategory.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lib_CustomIP/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
 								</option>
 								<inputType id="xilinx.gnu.arm.c.compiler.input.831076051" name="C source files" superClass="xilinx.gnu.arm.c.compiler.input"/>
 							</tool>

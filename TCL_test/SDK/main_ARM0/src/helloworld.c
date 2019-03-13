@@ -5,37 +5,15 @@
 #include "xparameters.h"
 
 #include "lib_IP_PWM_Manager.h"
-
-#define OFFSET_REG0						0X00
-#define OFFSET_REG1						0x04
-#define OFFSET_REG2						0x08
-#define OFFSET_REG3						0x0C
-#define OFFSET_REG4						0x10
-#define OFFSET_REG5						0x14
-#define OFFSET_REG6						0x18
-#define OFFSET_REG7						0x1C
-#define OFFSET_REG8						0x20
-#define OFFSET_REG9						0x24
-#define OFFSET_REG10					0x28
-#define OFFSET_REG11					0x2C
-#define OFFSET_REG12					0x30
-#define OFFSET_REG13					0x34
-#define OFFSET_REG14					0x38
-#define OFFSET_REG15					0x3C
-#define OFFSET_REG16					0x40
-#define OFFSET_REG17					0x44
-#define OFFSET_REG18					0x48
-#define OFFSET_REG19					0x4C
+#include "lib_IP_Mode_Manager.h"
 
 #define CPU0_10HZ_0_IRQ_ID 				XPAR_FABRIC_ZYNQ_SYSTEMS_FIT_TIMER_10HZ_INTERRUPT_INTR
 #define DIR_BASE_IP_PWM_MANAGER 		XPAR_PWM_MANAGER_0_S00_AXI_BASEADDR
 #define DIR_BASE_IP_MODE_MANAGER		XPAR_MODEMANAGER_0_S00_AXI_BASEADDR
 
-#ifdef DIR_BASE_IP_MODE_MANAGER
-	#define r_PWM_Mode		DIR_BASE_IP_MODE_MANAGER + OFFSET_REG0
+/*#ifdef DIR_BASE_IP_MODE_MANAGER
+	#define r_PWM_Mode		DIR_BASE_IP_MODE_MANAGER + 0x00
 #endif
-
-
 
 typedef union _registro
 {
@@ -45,7 +23,7 @@ typedef union _registro
 		u16 LSR;
 		u16 MSR;
 	}registros_u16;
-}registro_u32;
+}registro_u32;*/
 
 void int_handler_0_10HZ(void *data, u8 TmrCtrNumber);
 void init_GPIO(void);
@@ -54,6 +32,7 @@ void init_interrupt(void);
 static XScuGic IntcInstance; // Instancia para manejador de interrupciones
 static XGpio Gpio; /* The Instance of the GPIO Driver */
 static handler_PWMManager CH01;
+static handler_ModeManager Mode_Stick;
 
 volatile u8 flag_TMR10Hz = 0;
 
@@ -63,10 +42,13 @@ int main()
     init_interrupt();
     init_GPIO();
 
-    registro_u32 PWM_MODE;
+    /*registro_u32 PWM_MODE;
     PWM_MODE.registros_u16.LSR = 1100;
 	PWM_MODE.registros_u16.MSR = 1940;
-	Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);
+	Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);*/
+    init_IP_Mode_Manager(&Mode_Stick, DIR_BASE_IP_MODE_MANAGER);
+    set_PWM_Manual(&Mode_Stick, 1100);
+    set_PWM_Auto(&Mode_Stick, 1940);
 
     init_IP_PWM_Manager(&CH01,  DIR_BASE_IP_PWM_MANAGER);
     set_Min_PWM(&CH01, 1000);
@@ -91,11 +73,14 @@ int main()
 		{
 			flag_TMR10Hz = 0;
 
+			printf(" Valor de modo: 0x%x \t PWM Modo: %d \r\n",
+					get_Mode_Stick(&Mode_Stick),
+					get_Mode_PWM(&Mode_Stick));
 			printf(" PWMC \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
 					get_RC_Input_Value(&CH01),
 					get_Inverter_Value(&CH01),
-					get_Output_Value(&CH01,ch_Left),
-					get_Output_Value(&CH01,ch_Right));
+					get_Output_Value(&CH01, ch_Left),
+					get_Output_Value(&CH01, ch_Right));
 		}
     }
 

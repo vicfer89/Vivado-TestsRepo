@@ -40,23 +40,6 @@ typedef enum _channel{
 	ch_Left			// Left channel
 }channel;
 
-/** \var typedef enum IP_registers
-    \brief Enumerated where registers had been coded to provide access.
-
-    Codes slv_reg registers which are into the peripheral. For more information, see
-    \var typedef struct AXI_Registers.
-*/
-typedef enum _IP_registers{
-	slv_reg0 = 0,	 	//
-	slv_reg1,			// PWM Range register (Write Only)
-	slv_reg2,			// PWM for Direct mode (Write Only)
-	slv_reg3,           // PWM Input and PWM Inverted register (Read Only)
-	slv_reg4,		    // PWM Output register (Read Only)
-	slv_reg5,		    // PWM Output register (Read Only)
-	slv_reg6,		    // PWM Output register (Read Only)
-	slv_reg7		    // PWM Output register (Read Only)
-}IP_registers;
-
 typedef struct _PWM_Manager_values
 {
 	u16 r_MinPWM;
@@ -87,11 +70,11 @@ typedef struct _PWM_Manager_outputs
 }PWM_Manager_outputs;
 
 
-/** \var typedef struct AXI_Registers
-    \brief Enumerated where registers had been coded to provide access.
+/** \var typedef struct handler_PWMManager, *ptr_handler_PWMManager
+    \brief handler structure for PWM_Manager IP.
 
-    Structure where slv_reg information are contained. The function for these registers are
-    as follows:
+    This structure contains slv_reg content which are read or write to AXI bus, and baseAddr for the peripheral.
+    The function for these registers are as follows:
 
     	- slv_reg0: Configuration register
     		+ slv_reg0 bit0 -> f_sel_L_inv: Inversion flag for L channel.
@@ -123,8 +106,8 @@ typedef struct _PWM_Manager_outputs
     		+ slv_reg7 Upper 2 bytes -> Reserved for future use.
 
 */
-typedef struct _AXI_Registers
-{
+typedef struct _handler_PWMManager{
+	u32 baseAddr;
 
 	AXI_Register slv_reg0;
 	AXI_Register slv_reg1;
@@ -135,21 +118,9 @@ typedef struct _AXI_Registers
 	AXI_Register slv_reg6;
 	AXI_Register slv_reg7;
 
-}AXI_Registers;
-
-/** \var typedef struct handler_PWMManager
-    \brief Handler for PWM Manager object
-
-    Declarates a PWM Manager object
-*/
-typedef struct _handler_PWMManager{
-	u32 baseAddr; // Base address for declared peripheral
-
-	AXI_Registers AXI_Reg_Values;
-
 }handler_PWMManager, *ptr_handler_PWMManager;
 
-void init_IP_PWM_Manager(handler_PWMManager *handler, u32 IP_BASE_ADDR);
+void init_IP_PWM_Manager(handler_PWMManager *handler, u32 baseAddr);
 
 void set_Min_PWM(handler_PWMManager *handler, u16 PWM_Value);
 void set_Max_PWM(handler_PWMManager *handler, u16 PWM_Value);
