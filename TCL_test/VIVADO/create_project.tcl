@@ -25,6 +25,8 @@ source settings.tcl
 	set orig_proj_dir "[file normalize "$origin_dir/${run_dir}"]"
 
 # Nombres de variables para definición de Constraints y HW:
+	set platform_Constraints	"platform_Constraints"
+	set platform_Sources		"platform_Sources"
 	set constraint_file_name	"Const_PWM_Test"
 	set HW_block_file_name		"Test_PWM"
 	
@@ -45,15 +47,15 @@ set_property ip_repo_paths   ./ip_repo [current_fileset]
 update_ip_catalog
 
 # Creo proyecto a partir de HW generado por medio de Vivado (bloques)
-source ${HW_block_file_name}.tcl
+source ./${platform_Sources}/${HW_block_file_name}.tcl
 
 #Create top wrapper file
 make_wrapper -files [get_files $proj_dir/$project_name.srcs/sources_1/bd/$design_name/$design_name.bd] -top
 add_files -norecurse $proj_dir/$project_name.srcs/sources_1/bd/$design_name/hdl/${design_name}_wrapper.vhd
 
 # Add constraints al modelo para generación de eHW
-add_files -fileset constrs_1 -norecurse ./${constraint_file_name}.xdc
-import_files -fileset constrs_1 ./${constraint_file_name}.xdc
+add_files -fileset constrs_1 -norecurse ./${platform_Constraints}/${constraint_file_name}.xdc
+import_files -fileset constrs_1 ./${platform_Constraints}/${constraint_file_name}.xdc
 
 #implement the design and create bit file
 launch_runs impl_1 -to_step write_bitstream

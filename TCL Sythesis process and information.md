@@ -66,7 +66,7 @@ source [source_file].tcl
 Una vez que está presente en la carpeta el fichero `create_project.tcl`, se ejecuta el siguiente código en línea de comandos:
 
 ```tcl
-cd C:/Vivado_TestsRepo/TCL_test
+cd C:/Vivado_TestsRepo/TCL_test/VIVADO
 source create_project.tcl
 ```
 

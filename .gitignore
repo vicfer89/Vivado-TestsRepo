@@ -90,6 +90,8 @@ hw_outputs/
 !.cproject
 !.project
 *.xil/
+!XSDK
+!VIVADO
 #########
 #C-files
 #########
