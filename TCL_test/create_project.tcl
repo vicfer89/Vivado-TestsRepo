@@ -1,10 +1,10 @@
-# ##################################################
-#	Vivado Generador de eHW.
-#	Autor: VFF
-#
-#	Introducir fichero settings.tcl para uso.
-#
-# ##################################################
+# ################################################## #
+#	Vivado Generador de eHW.						 #
+#	Autor: VFF										 #
+#													 #
+#	Introducir fichero settings.tcl para uso.		 #
+#													 #
+# ################################################## #
 
 #Comprobacion de version de vivado
 set VivadoVersion 2014.4
@@ -24,6 +24,10 @@ source settings.tcl
 	# Directorio de origen del scrpit a ejecutar
 	set orig_proj_dir "[file normalize "$origin_dir/${run_dir}"]"
 
+# Nombres de variables para definición de Constraints y HW:
+	set constraint_file_name	"Const_PWM_Test"
+	set HW_block_file_name		"Test_PWM"
+	
 # Creamos proyecto en el directorio determinado:
 create_project ${project_name} ./${run_dir}
 
@@ -41,14 +45,13 @@ set_property ip_repo_paths   ./ip_repo [current_fileset]
 update_ip_catalog
 
 # Creo proyecto a partir de HW generado por medio de Vivado (bloques)
-source Test_PWM.tcl
+source ${HW_block_file_name}.tcl
 
 #Create top wrapper file
 make_wrapper -files [get_files $proj_dir/$project_name.srcs/sources_1/bd/$design_name/$design_name.bd] -top
 add_files -norecurse $proj_dir/$project_name.srcs/sources_1/bd/$design_name/hdl/${design_name}_wrapper.vhd
 
 # Add constraints al modelo para generación de eHW
-set constraint_file_name Const_PWM_Test
 add_files -fileset constrs_1 -norecurse ./${constraint_file_name}.xdc
 import_files -fileset constrs_1 ./${constraint_file_name}.xdc
 
@@ -58,12 +61,9 @@ wait_on_run -timeout 60 impl_1
 
 #Export design to SDK
 file mkdir $proj_dir/$project_name.sdk
-if [file isdirectory ./hw_outputs]
-{ 
+if [file isdirectory ./hw_outputs] { 
 	puts "Dir hw_Platforms exists. Updating platforms..."
-}
-else
-{
+} else {
 	file mkdir ./hw_Platforms
 	puts "Dir hw_outputs has been created."
 }

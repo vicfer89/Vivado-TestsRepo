@@ -82,7 +82,8 @@ SDK Files
 standalone_bsp_0/
 webtalk/
 RemoteSystemsTempFiles/
-hw_platform/
+hw_Platform/
+hw_Platforms/
 VIVADO_tmp/
 hw_outputs/
 !*.hdf
