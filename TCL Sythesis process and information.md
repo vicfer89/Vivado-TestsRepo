@@ -41,7 +41,40 @@ update_ip_catalog
 
 Con esto se añadirá al repositorio del proyecto abierto los IP contenidos en `[custom_repo_path]`para poder usarlos y cargar el TCL con el diseño de alto nivel.
 
-## TODO: Añadir fichero de Constraints y script de enlace
+## Proceso para importación de fuentes y script de ejecución:
+
+Para poder ejecutar un script de comandos TCL para la generación automática de HW se realiza lo siguiente:
+
+### Apuntar a directorio de trabajo:
+
+Para apuntar al directorio de trabajo se empleará el comando:
+
+```tcl
+# [dir]: Directorio de trabajo
+cd [dir]
+```
+
+Una vez ejecutado esto, podremos realizar la carga del fichero de creación de proyecto por medio del comando:
+
+```tcl
+# [source_file]: nombre del fichero fuente
+source [source_file].tcl
+```
+
+### Ejecutar script de creación de proyecto
+
+Una vez que está presente en la carpeta el fichero `create_project.tcl`, se ejecuta el siguiente código en línea de comandos:
+
+```tcl
+cd C:/Vivado_TestsRepo/TCL_test
+source create_project.tcl
+```
+
+Una vez ejecutado, se deberá generar el fichero .hdf y guardarlo en la carpeta `hw_platforms` con el nombre correspondiente.
+
+## ToDO: Crear fichero de ejecución por lotes para compilación de diseño eHW de forma automática.
+
+
 
 
 

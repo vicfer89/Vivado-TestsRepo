@@ -87,6 +87,7 @@ VIVADO/
 !*.hdf
 !.cproject
 !.project
+*.xil/
 #########
 #C-files
 #########
