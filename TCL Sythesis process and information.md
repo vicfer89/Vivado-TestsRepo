@@ -33,8 +33,8 @@ Una vez realizado este proceso, se seguirán los pasos estándar para la compila
 Se puede añadir un repositorio desde TCL, para lo cual se empleará el siguiente código:
 
 ```tcl
-#[custom_repo_path]: repositorio de IP custom a incluir
-#[current_project]: indica que será para el proyecto actual
+# [custom_repo_path]: repositorio de IP custom a incluir
+# [current_project]: indica que será para el proyecto actual
 set_property ip_repo_paths {[custom_repo_path]} [current_project]
 update_ip_catalog
 ```
@@ -74,7 +74,26 @@ Una vez ejecutado, se deberá generar el fichero .hdf y guardarlo en la carpeta 
 
 ## ToDO: Crear fichero de ejecución por lotes para compilación de diseño eHW de forma automática.
 
+## ToDO: Crear opciones para selección de HW de plataforma
 
+Crear opciones para selección de plataforma por entrada de teclado de forma directa mediante comando:
+
+```tcl
+# Genera una lista con los *.exe que hay en el directorio "wcet_executable"
+set hosts [glob -directory "wcet_executable" -- "*.exe"]
+```
+
+Para poder crear la lista:
+
+```tcl
+# Genera una lista con los *.exe que hay en el directorio "wcet_executable"
+set allexes [glob -directory "wcet_executable" -- "*.exe"]
+# Imprime lisa creada y almacenada en "allexes"
+foreach f $allexes {
+	puts "$f"
+    ...
+   }
+```
 
 
 

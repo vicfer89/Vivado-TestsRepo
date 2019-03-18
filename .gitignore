@@ -83,7 +83,8 @@ standalone_bsp_0/
 webtalk/
 RemoteSystemsTempFiles/
 hw_platform/
-VIVADO/
+VIVADO_tmp/
+hw_outputs/
 !*.hdf
 !.cproject
 !.project
