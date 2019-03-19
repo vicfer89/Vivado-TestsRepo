@@ -1,4 +1,5 @@
 # ################################################## #
+# 													 #
 #	Vivado Generador de eHW.						 #
 #	Autor: VFF										 #
 #													 #
@@ -74,6 +75,11 @@ file copy -force $proj_dir/$project_name.runs/impl_1/${design_name}_wrapper.sysd
 
 #close the project
 close_project
+
+if ${eraseVar} {
 # Erase $run_dir directory and .Xil metadata
 file delete -force ./$run_dir
 file delete -force ./.Xil
+} else {
+	puts "Ficheros fuente no eliminados"
+}

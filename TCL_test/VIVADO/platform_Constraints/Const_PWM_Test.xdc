@@ -35,7 +35,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports {gpio_out_tri_o[0]}]
 
 
 
-set_property PACKAGE_PIN F21 [get_ports pwm_in_mode]
 set_property IOSTANDARD LVCMOS33 [get_ports pwm_in_mode]
 
 
@@ -51,3 +50,19 @@ set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH01_out_L]
 set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH01_out_R]
 set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH02_out_L]
 set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH02_out_R]
+
+
+
+set_property PACKAGE_PIN F21 [get_ports pwm_in_ch03]
+set_property PACKAGE_PIN F22 [get_ports pwm_in_ch04]
+set_property PACKAGE_PIN H22 [get_ports pwm_in_mode]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_in_ch03]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_in_ch04]
+set_property PACKAGE_PIN W16 [get_ports pwm_CH03_out_L]
+set_property PACKAGE_PIN Y16 [get_ports pwm_CH03_out_R]
+set_property PACKAGE_PIN AA17 [get_ports pwm_CH04_out_L]
+set_property PACKAGE_PIN AB17 [get_ports pwm_CH04_out_R]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH03_out_L]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH03_out_R]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH04_out_L]
+set_property IOSTANDARD LVCMOS33 [get_ports pwm_CH04_out_R]

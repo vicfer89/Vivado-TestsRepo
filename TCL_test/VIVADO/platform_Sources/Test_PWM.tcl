@@ -179,6 +179,156 @@ proc create_hier_cell_MODE_MANAGER { parentCell nameHier } {
   current_bd_instance $oldCurInst
 }
 
+# Hierarchical cell: Channel_CH04
+proc create_hier_cell_Channel_CH04 { parentCell nameHier } {
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     puts "ERROR: create_hier_cell_Channel_CH04() - Empty argument(s)!"
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     puts "ERROR: Unable to find parent cell <$parentCell>!"
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     puts "ERROR: Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH04
+
+  # Create pins
+  create_bd_pin -dir I -type clk CLK
+  create_bd_pin -dir I PWM_CH04
+  create_bd_pin -dir I -from 1 -to 0 mode
+  create_bd_pin -dir O pwm_CH04_L
+  create_bd_pin -dir O pwm_CH04_R
+  create_bd_pin -dir I -type clk s00_axi_aclk
+  create_bd_pin -dir I -from 0 -to 0 -type rst s00_axi_aresetn
+
+  # Create instance: PWMReconstructor_CH04_L, and set properties
+  set PWMReconstructor_CH04_L [ create_bd_cell -type ip -vlnv aertec.local:user:PWMReconstructor:1.0 PWMReconstructor_CH04_L ]
+
+  # Create instance: PWMReconstructor_CH04_R, and set properties
+  set PWMReconstructor_CH04_R [ create_bd_cell -type ip -vlnv aertec.local:user:PWMReconstructor:1.0 PWMReconstructor_CH04_R ]
+
+  # Create instance: PWM_Manager_CH04, and set properties
+  set PWM_Manager_CH04 [ create_bd_cell -type ip -vlnv aertec.local:user:PWM_Manager:1.0 PWM_Manager_CH04 ]
+
+  # Create instance: PWM_Sampler_CH04, and set properties
+  set PWM_Sampler_CH04 [ create_bd_cell -type ip -vlnv aertec.local:user:PWM_Sampler:1.0 PWM_Sampler_CH04 ]
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S00_AXI_CH04] [get_bd_intf_pins PWM_Manager_CH04/S00_AXI]
+
+  # Create port connections
+  connect_bd_net -net CLK_IN_1 [get_bd_pins CLK] [get_bd_pins PWMReconstructor_CH04_L/clk_in] [get_bd_pins PWMReconstructor_CH04_R/clk_in] [get_bd_pins PWM_Sampler_CH04/CLK]
+  connect_bd_net -net ModeManager_0_mode [get_bd_pins mode] [get_bd_pins PWM_Manager_CH04/mode]
+  connect_bd_net -net PWMReconstructor_0_pwm_signal [get_bd_pins pwm_CH04_R] [get_bd_pins PWMReconstructor_CH04_R/pwm_signal]
+  connect_bd_net -net PWMReconstructor_1_pwm_signal [get_bd_pins pwm_CH04_L] [get_bd_pins PWMReconstructor_CH04_L/pwm_signal]
+  connect_bd_net -net PWM_1 [get_bd_pins PWM_CH04] [get_bd_pins PWM_Sampler_CH04/PWM]
+  connect_bd_net -net PWM_Manager_0_pwm_l [get_bd_pins PWMReconstructor_CH04_L/value] [get_bd_pins PWM_Manager_CH04/pwm_l]
+  connect_bd_net -net PWM_Manager_0_pwm_r [get_bd_pins PWMReconstructor_CH04_R/value] [get_bd_pins PWM_Manager_CH04/pwm_r]
+  connect_bd_net -net PWM_Sampler_0_PWM_Val [get_bd_pins PWM_Manager_CH04/pwm_rc] [get_bd_pins PWM_Sampler_CH04/PWM_Val]
+  connect_bd_net -net s00_axi_aclk_1 [get_bd_pins s00_axi_aclk] [get_bd_pins PWM_Manager_CH04/s00_axi_aclk]
+  connect_bd_net -net s00_axi_aresetn_1 [get_bd_pins s00_axi_aresetn] [get_bd_pins PWM_Manager_CH04/s00_axi_aresetn]
+  
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
+# Hierarchical cell: Channel_CH03
+proc create_hier_cell_Channel_CH03 { parentCell nameHier } {
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     puts "ERROR: create_hier_cell_Channel_CH03() - Empty argument(s)!"
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     puts "ERROR: Unable to find parent cell <$parentCell>!"
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     puts "ERROR: Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH03
+
+  # Create pins
+  create_bd_pin -dir I -type clk CLK
+  create_bd_pin -dir I PWM_CH03
+  create_bd_pin -dir I -from 1 -to 0 mode
+  create_bd_pin -dir O pwm_CH03_L
+  create_bd_pin -dir O pwm_CH03_R
+  create_bd_pin -dir I -type clk s00_axi_aclk
+  create_bd_pin -dir I -from 0 -to 0 -type rst s00_axi_aresetn
+
+  # Create instance: PWMReconstructor_CH03_L, and set properties
+  set PWMReconstructor_CH03_L [ create_bd_cell -type ip -vlnv aertec.local:user:PWMReconstructor:1.0 PWMReconstructor_CH03_L ]
+
+  # Create instance: PWMReconstructor_CH03_R, and set properties
+  set PWMReconstructor_CH03_R [ create_bd_cell -type ip -vlnv aertec.local:user:PWMReconstructor:1.0 PWMReconstructor_CH03_R ]
+
+  # Create instance: PWM_Manager_CH03, and set properties
+  set PWM_Manager_CH03 [ create_bd_cell -type ip -vlnv aertec.local:user:PWM_Manager:1.0 PWM_Manager_CH03 ]
+
+  # Create instance: PWM_Sampler_CH03, and set properties
+  set PWM_Sampler_CH03 [ create_bd_cell -type ip -vlnv aertec.local:user:PWM_Sampler:1.0 PWM_Sampler_CH03 ]
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S00_AXI_CH03] [get_bd_intf_pins PWM_Manager_CH03/S00_AXI]
+
+  # Create port connections
+  connect_bd_net -net CLK_IN_1 [get_bd_pins CLK] [get_bd_pins PWMReconstructor_CH03_L/clk_in] [get_bd_pins PWMReconstructor_CH03_R/clk_in] [get_bd_pins PWM_Sampler_CH03/CLK]
+  connect_bd_net -net ModeManager_0_mode [get_bd_pins mode] [get_bd_pins PWM_Manager_CH03/mode]
+  connect_bd_net -net PWMReconstructor_0_pwm_signal [get_bd_pins pwm_CH03_R] [get_bd_pins PWMReconstructor_CH03_R/pwm_signal]
+  connect_bd_net -net PWMReconstructor_1_pwm_signal [get_bd_pins pwm_CH03_L] [get_bd_pins PWMReconstructor_CH03_L/pwm_signal]
+  connect_bd_net -net PWM_1 [get_bd_pins PWM_CH03] [get_bd_pins PWM_Sampler_CH03/PWM]
+  connect_bd_net -net PWM_Manager_0_pwm_l [get_bd_pins PWMReconstructor_CH03_L/value] [get_bd_pins PWM_Manager_CH03/pwm_l]
+  connect_bd_net -net PWM_Manager_0_pwm_r [get_bd_pins PWMReconstructor_CH03_R/value] [get_bd_pins PWM_Manager_CH03/pwm_r]
+  connect_bd_net -net PWM_Sampler_0_PWM_Val [get_bd_pins PWM_Manager_CH03/pwm_rc] [get_bd_pins PWM_Sampler_CH03/PWM_Val]
+  connect_bd_net -net s00_axi_aclk_1 [get_bd_pins s00_axi_aclk] [get_bd_pins PWM_Manager_CH03/s00_axi_aclk]
+  connect_bd_net -net s00_axi_aresetn_1 [get_bd_pins s00_axi_aresetn] [get_bd_pins PWM_Manager_CH03/s00_axi_aresetn]
+  
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
+
 # Hierarchical cell: Channel_CH02
 proc create_hier_cell_Channel_CH02 { parentCell nameHier } {
 
@@ -368,6 +518,8 @@ proc create_hier_cell_Zynq_Systems { parentCell nameHier } {
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M02_AXI
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M03_AXI
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M04_AXI
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M05_AXI
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M06_AXI
   create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 UART
 
   # Create pins
@@ -675,7 +827,7 @@ CONFIG.PCW_WDT_WDT_IO {EMIO}  ] $processing_system7_0
 
   # Create instance: processing_system7_0_axi_periph, and set properties
   set processing_system7_0_axi_periph [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 processing_system7_0_axi_periph ]
-  set_property -dict [ list CONFIG.NUM_MI {5}  ] $processing_system7_0_axi_periph
+  set_property -dict [ list CONFIG.NUM_MI {7}  ] $processing_system7_0_axi_periph
 
   # Create instance: rst_processing_system7_0_100M, and set properties
   set rst_processing_system7_0_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_processing_system7_0_100M ]
@@ -689,6 +841,8 @@ CONFIG.PCW_WDT_WDT_IO {EMIO}  ] $processing_system7_0
   connect_bd_intf_net -intf_net Conn3 [get_bd_intf_pins FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net Conn4 [get_bd_intf_pins M04_AXI] [get_bd_intf_pins processing_system7_0_axi_periph/M04_AXI]
   connect_bd_intf_net -intf_net Conn5 [get_bd_intf_pins UART] [get_bd_intf_pins axi_uartlite_DBG0/UART]
+  connect_bd_intf_net -intf_net Conn6 [get_bd_intf_pins M05_AXI] [get_bd_intf_pins processing_system7_0_axi_periph/M05_AXI]
+  connect_bd_intf_net -intf_net Conn7 [get_bd_intf_pins M06_AXI] [get_bd_intf_pins processing_system7_0_axi_periph/M06_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins processing_system7_0_axi_periph/S00_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_axi_periph_M00_AXI [get_bd_intf_pins axi_gpio_OUTS/S_AXI] [get_bd_intf_pins processing_system7_0_axi_periph/M00_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_axi_periph_M01_AXI [get_bd_intf_pins axi_uartlite_DBG0/S_AXI] [get_bd_intf_pins processing_system7_0_axi_periph/M01_AXI]
@@ -699,14 +853,14 @@ CONFIG.PCW_WDT_WDT_IO {EMIO}  ] $processing_system7_0
   connect_bd_net -net axi_uartlite_DBG0_interrupt [get_bd_pins axi_uartlite_DBG0/interrupt] [get_bd_pins xlconcat_IRQ_CPU0/In1]
   connect_bd_net -net fit_timer_100Hz_Interrupt [get_bd_pins fit_timer_10Hz/Interrupt] [get_bd_pins xlconcat_IRQ_CPU0/In0]
   connect_bd_net -net proc_sys_reset_0_1M_peripheral_aresetn [get_bd_pins fit_timer_10Hz/Rst] [get_bd_pins proc_sys_reset_0_1M/peripheral_aresetn]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins FCLK_CLK0] [get_bd_pins axi_gpio_OUTS/s_axi_aclk] [get_bd_pins axi_uartlite_DBG0/s_axi_aclk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0_axi_periph/ACLK] [get_bd_pins processing_system7_0_axi_periph/M00_ACLK] [get_bd_pins processing_system7_0_axi_periph/M01_ACLK] [get_bd_pins processing_system7_0_axi_periph/M02_ACLK] [get_bd_pins processing_system7_0_axi_periph/M03_ACLK] [get_bd_pins processing_system7_0_axi_periph/M04_ACLK] [get_bd_pins processing_system7_0_axi_periph/S00_ACLK] [get_bd_pins rst_processing_system7_0_100M/slowest_sync_clk]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins FCLK_CLK0] [get_bd_pins axi_gpio_OUTS/s_axi_aclk] [get_bd_pins axi_uartlite_DBG0/s_axi_aclk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0_axi_periph/ACLK] [get_bd_pins processing_system7_0_axi_periph/M00_ACLK] [get_bd_pins processing_system7_0_axi_periph/M01_ACLK] [get_bd_pins processing_system7_0_axi_periph/M02_ACLK] [get_bd_pins processing_system7_0_axi_periph/M03_ACLK] [get_bd_pins processing_system7_0_axi_periph/M04_ACLK] [get_bd_pins processing_system7_0_axi_periph/M05_ACLK] [get_bd_pins processing_system7_0_axi_periph/M06_ACLK] [get_bd_pins processing_system7_0_axi_periph/S00_ACLK] [get_bd_pins rst_processing_system7_0_100M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_CLK1 [get_bd_pins FCLK_CLK1] [get_bd_pins fit_timer_10Hz/Clk] [get_bd_pins proc_sys_reset_0_1M/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK1]
   connect_bd_net -net processing_system7_0_FCLK_CLK2 [get_bd_pins FCLK_CLK2] [get_bd_pins processing_system7_0/FCLK_CLK2]
   connect_bd_net -net processing_system7_0_FCLK_CLK3 [get_bd_pins FCLK_CLK3] [get_bd_pins processing_system7_0/FCLK_CLK3]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_processing_system7_0_100M/ext_reset_in]
   connect_bd_net -net processing_system7_0_WDT_RST_OUT [get_bd_pins WDT_RST_OUT] [get_bd_pins processing_system7_0/WDT_RST_OUT]
   connect_bd_net -net rst_processing_system7_0_100M_interconnect_aresetn [get_bd_pins processing_system7_0_axi_periph/ARESETN] [get_bd_pins rst_processing_system7_0_100M/interconnect_aresetn]
-  connect_bd_net -net rst_processing_system7_0_100M_peripheral_aresetn [get_bd_pins peripheral_aresetn] [get_bd_pins axi_gpio_OUTS/s_axi_aresetn] [get_bd_pins axi_uartlite_DBG0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0_1M/ext_reset_in] [get_bd_pins processing_system7_0_axi_periph/M00_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M01_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M02_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M03_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M04_ARESETN] [get_bd_pins processing_system7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_processing_system7_0_100M/peripheral_aresetn]
+  connect_bd_net -net rst_processing_system7_0_100M_peripheral_aresetn [get_bd_pins peripheral_aresetn] [get_bd_pins axi_gpio_OUTS/s_axi_aresetn] [get_bd_pins axi_uartlite_DBG0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0_1M/ext_reset_in] [get_bd_pins processing_system7_0_axi_periph/M00_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M01_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M02_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M03_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M04_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M05_ARESETN] [get_bd_pins processing_system7_0_axi_periph/M06_ARESETN] [get_bd_pins processing_system7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_processing_system7_0_100M/peripheral_aresetn]
   connect_bd_net -net xlconcat_IRQ_CPU0_dout [get_bd_pins processing_system7_0/IRQ_F2P] [get_bd_pins xlconcat_IRQ_CPU0/dout]
   
   # Restore current instance
@@ -749,16 +903,24 @@ proc create_hier_cell_PWM_MANAGER { parentCell nameHier } {
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI1
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH01
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH02
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH03
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI_CH04
 
   # Create pins
   create_bd_pin -dir I CLK_IN
   create_bd_pin -dir I PWM_CH01
   create_bd_pin -dir I PWM_CH02
+  create_bd_pin -dir I PWM_CH03
+  create_bd_pin -dir I PWM_CH04
   create_bd_pin -dir I PWM_MODE
   create_bd_pin -dir O pwm_CH01_L
   create_bd_pin -dir O pwm_CH01_R
   create_bd_pin -dir O pwm_CH02_L
   create_bd_pin -dir O pwm_CH02_R
+  create_bd_pin -dir O pwm_CH03_L
+  create_bd_pin -dir O pwm_CH03_R
+  create_bd_pin -dir O pwm_CH04_L
+  create_bd_pin -dir O pwm_CH04_R
   create_bd_pin -dir I -type clk s00_axi_aclk
   create_bd_pin -dir I -from 0 -to 0 -type rst s00_axi_aresetn
 
@@ -768,6 +930,12 @@ proc create_hier_cell_PWM_MANAGER { parentCell nameHier } {
   # Create instance: Channel_CH02
   create_hier_cell_Channel_CH02 $hier_obj Channel_CH02
 
+  # Create instance: Channel_CH03
+  create_hier_cell_Channel_CH03 $hier_obj Channel_CH03
+
+  # Create instance: Channel_CH04
+  create_hier_cell_Channel_CH04 $hier_obj Channel_CH04
+
   # Create instance: MODE_MANAGER
   create_hier_cell_MODE_MANAGER $hier_obj MODE_MANAGER
 
@@ -775,19 +943,27 @@ proc create_hier_cell_PWM_MANAGER { parentCell nameHier } {
   connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S00_AXI_CH01] [get_bd_intf_pins Channel_CH01/S00_AXI]
   connect_bd_intf_net -intf_net Conn2 [get_bd_intf_pins S00_AXI1] [get_bd_intf_pins MODE_MANAGER/S00_AXI]
   connect_bd_intf_net -intf_net Conn3 [get_bd_intf_pins S00_AXI_CH02] [get_bd_intf_pins Channel_CH02/S00_AXI_CH02]
+  connect_bd_intf_net -intf_net Conn4 [get_bd_intf_pins S00_AXI_CH03] [get_bd_intf_pins Channel_CH03/S00_AXI_CH03]
+  connect_bd_intf_net -intf_net Conn5 [get_bd_intf_pins S00_AXI_CH04] [get_bd_intf_pins Channel_CH04/S00_AXI_CH04]
 
   # Create port connections
-  connect_bd_net -net CLK_IN_1 [get_bd_pins CLK_IN] [get_bd_pins Channel_CH01/CLK] [get_bd_pins Channel_CH02/CLK] [get_bd_pins MODE_MANAGER/CLK_IN]
+  connect_bd_net -net CLK_IN_1 [get_bd_pins CLK_IN] [get_bd_pins Channel_CH01/CLK] [get_bd_pins Channel_CH02/CLK] [get_bd_pins Channel_CH03/CLK] [get_bd_pins Channel_CH04/CLK] [get_bd_pins MODE_MANAGER/CLK_IN]
   connect_bd_net -net Channel_CH02_pwm_CH02_L [get_bd_pins pwm_CH02_L] [get_bd_pins Channel_CH02/pwm_CH02_L]
   connect_bd_net -net Channel_CH02_pwm_CH02_R [get_bd_pins pwm_CH02_R] [get_bd_pins Channel_CH02/pwm_CH02_R]
-  connect_bd_net -net ModeManager_0_mode [get_bd_pins Channel_CH01/mode] [get_bd_pins Channel_CH02/mode] [get_bd_pins MODE_MANAGER/mode]
+  connect_bd_net -net Channel_CH03_pwm_CH03_L [get_bd_pins pwm_CH03_L] [get_bd_pins Channel_CH03/pwm_CH03_L]
+  connect_bd_net -net Channel_CH03_pwm_CH03_R [get_bd_pins pwm_CH03_R] [get_bd_pins Channel_CH03/pwm_CH03_R]
+  connect_bd_net -net Channel_CH04_pwm_CH04_L [get_bd_pins pwm_CH04_L] [get_bd_pins Channel_CH04/pwm_CH04_L]
+  connect_bd_net -net Channel_CH04_pwm_CH04_R [get_bd_pins pwm_CH04_R] [get_bd_pins Channel_CH04/pwm_CH04_R]
+  connect_bd_net -net ModeManager_0_mode [get_bd_pins Channel_CH01/mode] [get_bd_pins Channel_CH02/mode] [get_bd_pins Channel_CH03/mode] [get_bd_pins Channel_CH04/mode] [get_bd_pins MODE_MANAGER/mode]
   connect_bd_net -net PWM1_1 [get_bd_pins PWM_MODE] [get_bd_pins MODE_MANAGER/PWM]
   connect_bd_net -net PWMReconstructor_0_pwm_signal [get_bd_pins pwm_CH01_R] [get_bd_pins Channel_CH01/pwm_CH01_R]
   connect_bd_net -net PWMReconstructor_1_pwm_signal [get_bd_pins pwm_CH01_L] [get_bd_pins Channel_CH01/pwm_CH01_L]
   connect_bd_net -net PWM_1 [get_bd_pins PWM_CH01] [get_bd_pins Channel_CH01/PWM_CH01]
   connect_bd_net -net PWM_CH02_1 [get_bd_pins PWM_CH02] [get_bd_pins Channel_CH02/PWM_CH02]
-  connect_bd_net -net s00_axi_aclk_1 [get_bd_pins s00_axi_aclk] [get_bd_pins Channel_CH01/s00_axi_aclk] [get_bd_pins Channel_CH02/s00_axi_aclk] [get_bd_pins MODE_MANAGER/s00_axi_aclk]
-  connect_bd_net -net s00_axi_aresetn_1 [get_bd_pins s00_axi_aresetn] [get_bd_pins Channel_CH01/s00_axi_aresetn] [get_bd_pins Channel_CH02/s00_axi_aresetn] [get_bd_pins MODE_MANAGER/s00_axi_aresetn]
+  connect_bd_net -net PWM_CH03_1 [get_bd_pins PWM_CH03] [get_bd_pins Channel_CH03/PWM_CH03]
+  connect_bd_net -net PWM_CH04_1 [get_bd_pins PWM_CH04] [get_bd_pins Channel_CH04/PWM_CH04]
+  connect_bd_net -net s00_axi_aclk_1 [get_bd_pins s00_axi_aclk] [get_bd_pins Channel_CH01/s00_axi_aclk] [get_bd_pins Channel_CH02/s00_axi_aclk] [get_bd_pins Channel_CH03/s00_axi_aclk] [get_bd_pins Channel_CH04/s00_axi_aclk] [get_bd_pins MODE_MANAGER/s00_axi_aclk]
+  connect_bd_net -net s00_axi_aresetn_1 [get_bd_pins s00_axi_aresetn] [get_bd_pins Channel_CH01/s00_axi_aresetn] [get_bd_pins Channel_CH02/s00_axi_aresetn] [get_bd_pins Channel_CH03/s00_axi_aresetn] [get_bd_pins Channel_CH04/s00_axi_aresetn] [get_bd_pins MODE_MANAGER/s00_axi_aresetn]
   
   # Restore current instance
   current_bd_instance $oldCurInst
@@ -834,8 +1010,14 @@ proc create_root_design { parentCell } {
   set pwm_CH01_out_R [ create_bd_port -dir O pwm_CH01_out_R ]
   set pwm_CH02_out_L [ create_bd_port -dir O pwm_CH02_out_L ]
   set pwm_CH02_out_R [ create_bd_port -dir O pwm_CH02_out_R ]
+  set pwm_CH03_out_L [ create_bd_port -dir O pwm_CH03_out_L ]
+  set pwm_CH03_out_R [ create_bd_port -dir O pwm_CH03_out_R ]
+  set pwm_CH04_out_L [ create_bd_port -dir O pwm_CH04_out_L ]
+  set pwm_CH04_out_R [ create_bd_port -dir O pwm_CH04_out_R ]
   set pwm_in_ch01 [ create_bd_port -dir I pwm_in_ch01 ]
   set pwm_in_ch02 [ create_bd_port -dir I pwm_in_ch02 ]
+  set pwm_in_ch03 [ create_bd_port -dir I pwm_in_ch03 ]
+  set pwm_in_ch04 [ create_bd_port -dir I pwm_in_ch04 ]
   set pwm_in_mode [ create_bd_port -dir I pwm_in_mode ]
 
   # Create instance: PWM_MANAGER
@@ -851,12 +1033,20 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net Zynq_Systems_M02_AXI [get_bd_intf_pins PWM_MANAGER/S00_AXI_CH01] [get_bd_intf_pins Zynq_Systems/M02_AXI]
   connect_bd_intf_net -intf_net Zynq_Systems_M03_AXI [get_bd_intf_pins PWM_MANAGER/S00_AXI1] [get_bd_intf_pins Zynq_Systems/M03_AXI]
   connect_bd_intf_net -intf_net Zynq_Systems_M04_AXI [get_bd_intf_pins PWM_MANAGER/S00_AXI_CH02] [get_bd_intf_pins Zynq_Systems/M04_AXI]
+  connect_bd_intf_net -intf_net Zynq_Systems_M05_AXI [get_bd_intf_pins PWM_MANAGER/S00_AXI_CH03] [get_bd_intf_pins Zynq_Systems/M05_AXI]
+  connect_bd_intf_net -intf_net Zynq_Systems_M06_AXI [get_bd_intf_pins PWM_MANAGER/S00_AXI_CH04] [get_bd_intf_pins Zynq_Systems/M06_AXI]
   connect_bd_intf_net -intf_net Zynq_Systems_UART [get_bd_intf_ports uart_DBG0] [get_bd_intf_pins Zynq_Systems/UART]
 
   # Create port connections
   connect_bd_net -net PWM_CH02_1 [get_bd_ports pwm_in_ch02] [get_bd_pins PWM_MANAGER/PWM_CH02]
+  connect_bd_net -net PWM_CH03_1 [get_bd_ports pwm_in_ch03] [get_bd_pins PWM_MANAGER/PWM_CH03]
+  connect_bd_net -net PWM_CH04_1 [get_bd_ports pwm_in_ch04] [get_bd_pins PWM_MANAGER/PWM_CH04]
   connect_bd_net -net PWM_MANAGER_pwm_CH02_L [get_bd_ports pwm_CH02_out_L] [get_bd_pins PWM_MANAGER/pwm_CH02_L]
   connect_bd_net -net PWM_MANAGER_pwm_CH02_R [get_bd_ports pwm_CH02_out_R] [get_bd_pins PWM_MANAGER/pwm_CH02_R]
+  connect_bd_net -net PWM_MANAGER_pwm_CH03_L [get_bd_ports pwm_CH03_out_L] [get_bd_pins PWM_MANAGER/pwm_CH03_L]
+  connect_bd_net -net PWM_MANAGER_pwm_CH03_R [get_bd_ports pwm_CH03_out_R] [get_bd_pins PWM_MANAGER/pwm_CH03_R]
+  connect_bd_net -net PWM_MANAGER_pwm_CH04_L [get_bd_ports pwm_CH04_out_L] [get_bd_pins PWM_MANAGER/pwm_CH04_L]
+  connect_bd_net -net PWM_MANAGER_pwm_CH04_R [get_bd_ports pwm_CH04_out_R] [get_bd_pins PWM_MANAGER/pwm_CH04_R]
   connect_bd_net -net PWM_MANAGER_pwm_signal [get_bd_ports pwm_CH01_out_R] [get_bd_pins PWM_MANAGER/pwm_CH01_R]
   connect_bd_net -net PWM_MANAGER_pwm_signal1 [get_bd_ports pwm_CH01_out_L] [get_bd_pins PWM_MANAGER/pwm_CH01_L]
   connect_bd_net -net Zynq_Systems_FCLK_CLK0 [get_bd_pins PWM_MANAGER/s00_axi_aclk] [get_bd_pins Zynq_Systems/FCLK_CLK0]
@@ -869,6 +1059,8 @@ proc create_root_design { parentCell } {
   create_bd_addr_seg -range 0x10000 -offset 0x43C10000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs PWM_MANAGER/MODE_MANAGER/ModeManager_0/S00_AXI/S00_AXI_reg] SEG_ModeManager_0_S00_AXI_reg
   create_bd_addr_seg -range 0x10000 -offset 0x43C00000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs PWM_MANAGER/Channel_CH01/PWM_Manager_CH01/S00_AXI/S00_AXI_reg] SEG_PWM_Manager_0_S00_AXI_reg
   create_bd_addr_seg -range 0x10000 -offset 0x43C20000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs PWM_MANAGER/Channel_CH02/PWM_Manager_CH02/S00_AXI/S00_AXI_reg] SEG_PWM_Manager_CH02_S00_AXI_reg
+  create_bd_addr_seg -range 0x10000 -offset 0x43C30000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs PWM_MANAGER/Channel_CH03/PWM_Manager_CH03/S00_AXI/S00_AXI_reg] SEG_PWM_Manager_CH03_S00_AXI_reg
+  create_bd_addr_seg -range 0x10000 -offset 0x43C40000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs PWM_MANAGER/Channel_CH04/PWM_Manager_CH04/S00_AXI/S00_AXI_reg] SEG_PWM_Manager_CH04_S00_AXI_reg
   create_bd_addr_seg -range 0x10000 -offset 0x41200000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs Zynq_Systems/axi_gpio_OUTS/S_AXI/Reg] SEG_axi_gpio_OUTS_Reg
   create_bd_addr_seg -range 0x10000 -offset 0x42C00000 [get_bd_addr_spaces Zynq_Systems/processing_system7_0/Data] [get_bd_addr_segs Zynq_Systems/axi_uartlite_DBG0/S_AXI/Reg] SEG_axi_uartlite_DBG0_Reg
   
