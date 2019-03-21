@@ -8,8 +8,10 @@
 #include "lib_IP_Mode_Manager.h"
 
 #define CPU0_10HZ_0_IRQ_ID 				XPAR_FABRIC_ZYNQ_SYSTEMS_FIT_TIMER_10HZ_INTERRUPT_INTR
-#define DIR_BASE_IP_PWM_MANAGER_CH01 	XPAR_PWM_MANAGER_CHANNEL_CH01_PWM_MANAGER_CH01_S00_AXI_BASEADDR
-#define DIR_BASE_IP_PWM_MANAGER_CH02 	XPAR_PWM_MANAGER_CHANNEL_CH02_PWM_MANAGER_CH02_S00_AXI_BASEADDR
+#define DIR_BASE_IP_PWM_MANAGER_CH01	XPAR_PWM_MANAGER_CHANNEL_CH01_PWM_MANAGER_CH01_S00_AXI_BASEADDR
+#define DIR_BASE_IP_PWM_MANAGER_CH02	XPAR_PWM_MANAGER_CHANNEL_CH02_PWM_MANAGER_CH02_S00_AXI_BASEADDR
+#define DIR_BASE_IP_PWM_MANAGER_CH03	XPAR_PWM_MANAGER_CHANNEL_CH03_PWM_MANAGER_CH03_S00_AXI_BASEADDR
+#define DIR_BASE_IP_PWM_MANAGER_CH04	XPAR_PWM_MANAGER_CHANNEL_CH04_PWM_MANAGER_CH04_S00_AXI_BASEADDR
 #define DIR_BASE_IP_MODE_MANAGER		XPAR_PWM_MANAGER_MODE_MANAGER_MODEMANAGER_0_S00_AXI_BASEADDR
 
 /*#ifdef DIR_BASE_IP_MODE_MANAGER
@@ -32,7 +34,7 @@ void init_interrupt(void);
 
 static XScuGic IntcInstance; // Instancia para manejador de interrupciones
 static XGpio Gpio; /* The Instance of the GPIO Driver */
-static handler_PWMManager CH01;
+static handler_PWMManager CH01, CH02, CH03, CH04;
 static handler_ModeManager Mode_Stick;
 
 volatile u8 flag_TMR10Hz = 0;
@@ -59,7 +61,7 @@ int main()
     set_Direct_Value(&CH01, ch_Left, 1015);
 
     set_Inversion(&CH01, ch_Right, channel_Inverted);
-    set_Inversion(&CH01, ch_Left, channel_Inverted);
+    set_Inversion(&CH01, ch_Left, channel_NotInverted);
 
     set_Output_Type(&CH01, ch_Right, pwm_out_processed);
     set_Output_Type(&CH01, ch_Left, pwm_out_processed);
