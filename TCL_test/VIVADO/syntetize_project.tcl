@@ -28,11 +28,9 @@ source settings.tcl
 # Nombres de variables para definición de Constraints y HW:
 	set platform_Constraints	"platform_Constraints"
 	set platform_Sources		"platform_Sources"
-	set constraint_file_name	"Const_PWM_Test"
-	set HW_block_file_name		"Test_PWM"
-	
+
 # Creamos proyecto en el directorio determinado:
-create_project ${project_name} ./${run_dir}
+create_project -force ${project_name} ./${run_dir}
 
 # Se selecciona el directorio del proyecto para proyecto creado:
 set proj_dir [get_property directory [current_project]]

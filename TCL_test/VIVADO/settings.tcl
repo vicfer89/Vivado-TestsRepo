@@ -12,3 +12,7 @@ set hw_platform            AAP04
 
 # Borrado de ficheros fuente (1 para borrar, 0 para no borrar)
 set eraseVar	1
+
+# Selección de plataforma y fichero de restricciones
+set constraint_file_name	"Const_PWM_Tester_6CH"
+set HW_block_file_name		"PWM_Manager_6CH"
