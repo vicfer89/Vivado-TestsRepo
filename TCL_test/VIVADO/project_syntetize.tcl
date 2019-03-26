@@ -28,6 +28,7 @@ source settings.tcl
 # Nombres de variables para definición de Constraints y HW:
 	set platform_Constraints	"platform_Constraints"
 	set platform_Sources		"platform_Sources"
+	set platform_Wrappers		"platform_Wrappers"
 
 # Creamos proyecto en el directorio determinado:
 create_project -force ${project_name} ./${run_dir}
@@ -45,12 +46,30 @@ set_property "simulator_language" "VHDL" $obj
 set_property ip_repo_paths   ./ip_repo [current_fileset]
 update_ip_catalog
 
+ # Create 'sources_1' fileset (if not found)
+if {[string equal [get_filesets -quiet sources_1] ""]} {
+create_fileset -srcset sources_1
+}
+
+# Set 'sources_1' fileset object
+set obj [get_filesets sources_1]
+set files [list \
+"[file normalize "./${platform_Wrappers}/${HW_block_file_name}_Top_Design.vhd"]"\
+]
+add_files -norecurse -fileset $obj $files
+
+
+set file "./${platform_Wrappers}/${HW_block_file_name}_Top_Design.vhd"
+set file [file normalize $file]
+set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
+set_property "file_type" "VHDL" $file_obj
+
 # Creo proyecto a partir de HW generado por medio de Vivado (bloques)
 source ./${platform_Sources}/${HW_block_file_name}.tcl
 
 #Create top wrapper file
-make_wrapper -files [get_files $proj_dir/$project_name.srcs/sources_1/bd/$design_name/$design_name.bd] -top
-add_files -norecurse $proj_dir/$project_name.srcs/sources_1/bd/$design_name/hdl/${design_name}_wrapper.vhd
+#make_wrapper -files [get_files $proj_dir/$project_name.srcs/sources_1/bd/$design_name/$design_name.bd] -top
+#add_files -norecurse $proj_dir/$project_name.srcs/sources_1/bd/$design_name/hdl/${design_name}_wrapper.vhd
 
 # Add constraints al modelo para generación de eHW
 add_files -fileset constrs_1 -norecurse ./${platform_Constraints}/${constraint_file_name}.xdc

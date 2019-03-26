@@ -1,120 +1,7 @@
-# Vivado TCL Scripts
-
-Documento de información acerca de generación, carga y manejo de lenguaje TCL para vivado.
-
-## Importación de diseño HW por medio de TCL
-
-Para importar un diseño HW por medio de un script TCL generado en Vivado será necesario seguir el siguiente conjunto de pasos:
-
-1. Generar un proyecto vacío de Vivado en la carpeta dónde se desee crear el fichero.
-
-2. Añadir al repositorio todas la IP empleadas que **NO** sean pertenecientes a Xilinx
-
-3. Cargar el TCL a través del comando *source*:
-
-   ```tcl
-   # [path]: Carpeta dónde se encuentre el fichero tcl a ejecutar.
-   # [file_name]: Nombre del script tcl a ejecutar
-   source [path/file_name.tcl]
-   ```
-   Otra opción es emplear el comando desde la interfaz gráfica:
-   ![Comando desde GUI de Vivado](.\md_images\TCL_Command_GUI.png)
-
-4. Generar el fichero HDL correspondiente para el HW creado.
-
-5. Cargar el fichero de restricciones.
-
-6. Generar bitstream y exportar HDF.
-
-Una vez realizado este proceso, se seguirán los pasos estándar para la compilación de SW.
-
-## Añadir repositorio desde TCL
-
-Se puede añadir un repositorio desde TCL, para lo cual se empleará el siguiente código:
-
-```tcl
-# [custom_repo_path]: repositorio de IP custom a incluir
-# [current_project]: indica que será para el proyecto actual
-set_property ip_repo_paths {[custom_repo_path]} [current_project]
-update_ip_catalog
-```
-
-Con esto se añadirá al repositorio del proyecto abierto los IP contenidos en `[custom_repo_path]`para poder usarlos y cargar el TCL con el diseño de alto nivel.
-
-## Proceso para importación de fuentes y script de ejecución:
-
-Para poder ejecutar un script de comandos TCL para la generación automática de HW se realiza lo siguiente:
-
-### Apuntar a directorio de trabajo:
-
-Para apuntar al directorio de trabajo se empleará el comando:
-
-```tcl
-# [dir]: Directorio de trabajo
-cd [dir]
-```
-
-Una vez ejecutado esto, podremos realizar la carga del fichero de creación de proyecto por medio del comando:
-
-```tcl
-# [source_file]: nombre del fichero fuente
-source [source_file].tcl
-```
-
-### Ejecutar script de creación de proyecto
-
-Una vez que está presente en la carpeta el fichero `create_project.tcl`, se ejecuta el siguiente código en línea de comandos:
-
-```tcl
-cd C:/Vivado_TestsRepo/TCL_test/VIVADO
-source create_project.tcl
-```
-
-Una vez ejecutado, se deberá generar el fichero .hdf y guardarlo en la carpeta `hw_platforms` con el nombre correspondiente.
-
-## Crear fichero de ejecución por lotes para compilación de diseño eHW de forma automática.
-
-Creado fichero, su código permite la creación de la plataforma seleccionada en `settings`, de forma que se ejecutará y se guardará el resultado de la compilación en `hw platforms`. Se necesitan los siguientes ficheros:
-
-1. Fichero TCL de descripción de bloques.
-2. Fichero XDC con constraints.
-3. Fichero HDL Wrapper para cada plataforma.
-
-## ToDO: Crear opciones para selección de HW de plataforma
-
-Crear opciones para selección de plataforma por entrada de teclado de forma directa mediante comando:
-
-```tcl
-# Genera una lista con los *.exe que hay en el directorio "wcet_executable"
-set hosts [glob -directory "wcet_executable" -- "*.exe"]
-```
-
-Para poder crear la lista:
-
-```tcl
-# Genera una lista con los *.exe que hay en el directorio "wcet_executable"
-set allexes [glob -directory "wcet_executable" -- "*.exe"]
-# Imprime lisa creada y almacenada en "allexes"
-foreach f $allexes {
-	puts "$f"
-    ...
-   }
-```
-
-## ToDo: Ficheros para generación automática de HW
-
-Para poder generar de forma automática eHW para una PCB dada, será necesario tener dos ficheros, uno para la PCB en sí, con los nombres de I/O de la PCB, y otro que haga de nexo entre ambos:
-
-1. Fichero de definición de PCB: Fichero de restricciones con todas las restricciones de la placa, sean o no usadas.
-2. Fichero Wrapper donde se emplearán dichas restricciones.
-
-Las restricciones se pondrán en el fichero Wrapper, que contiene como en el siguiente ejemplo:
-
-```vhdl
 --Copyright 1986-2014 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2014.4 (win64) Build 1071353 Tue Nov 18 18:29:27 MST 2014
---Date        : Mon Mar 25 15:40:11 2019
+--Date        : Mon Mar 25 16:23:31 2019
 --Host        : Aertec-PC896 running 64-bit major release  (build 9200)
 --Command     : generate_target PWM_Manager_6CH_wrapper.bd
 --Design      : PWM_Manager_6CH_wrapper
@@ -124,7 +11,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 library UNISIM;
 use UNISIM.VCOMPONENTS.ALL;
--- Entidad EXTERNA del diseño de alto nivel
 entity PWM_Manager_6CH_wrapper is
   port (
     DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
@@ -160,7 +46,7 @@ entity PWM_Manager_6CH_wrapper is
     pwm_CH04_out_T : out STD_LOGIC;
     pwm_CH06_out_L : out STD_LOGIC;
     pwm_CH06_out_R : out STD_LOGIC;
-    J905_09 : in STD_LOGIC; -- Nombre como aparece en las restricciones
+    J905_09 : in STD_LOGIC;
     J905_10 : in STD_LOGIC;
     J905_11 : in STD_LOGIC;
     J905_12 : in STD_LOGIC;
@@ -172,27 +58,25 @@ entity PWM_Manager_6CH_wrapper is
 end PWM_Manager_6CH_wrapper;
 
 architecture STRUCTURE of PWM_Manager_6CH_wrapper is
--- COMPONENTE correspondiente al diseño HW
   component PWM_Manager_6CH is
   port (
-    pwm_CH01_out_L : out STD_LOGIC;
-    pwm_CH01_out_R : out STD_LOGIC;
+    pwm_in_ch02 : in STD_LOGIC;
+    pwm_in_ch03 : in STD_LOGIC;
+    pwm_in_ch04 : in STD_LOGIC;
+    pwm_in_ch06 : in STD_LOGIC;
     pwm_CH02_out_L : out STD_LOGIC;
     pwm_CH02_out_R : out STD_LOGIC;
     pwm_CH03_out_L : out STD_LOGIC;
     pwm_CH03_out_R : out STD_LOGIC;
     pwm_CH04_out_L : out STD_LOGIC;
     pwm_CH04_out_R : out STD_LOGIC;
-    pwm_CH04_out_T : out STD_LOGIC;
     pwm_CH06_out_L : out STD_LOGIC;
     pwm_CH06_out_R : out STD_LOGIC;
--- Nombres en el diseño HW (como se pone en vivado y TCL)
-    pwm_in_ch01 : in STD_LOGIC; 
-    pwm_in_ch02 : in STD_LOGIC;
-    pwm_in_ch03 : in STD_LOGIC;
-    pwm_in_ch04 : in STD_LOGIC;
+    pwm_CH01_out_R : out STD_LOGIC;
+    pwm_CH01_out_L : out STD_LOGIC;
+    pwm_CH04_out_T : out STD_LOGIC;
+    pwm_in_ch01 : in STD_LOGIC;
     pwm_in_ch05 : in STD_LOGIC;
-    pwm_in_ch06 : in STD_LOGIC;
     DDR_cas_n : inout STD_LOGIC;
     DDR_cke : inout STD_LOGIC;
     DDR_ck_n : inout STD_LOGIC;
@@ -220,7 +104,6 @@ architecture STRUCTURE of PWM_Manager_6CH_wrapper is
   );
   end component PWM_Manager_6CH;
 begin
--- Asignacion y conexion entre HW y fichero de restricciones
 PWM_Manager_6CH_i: component PWM_Manager_6CH
     port map (
       DDR_addr(14 downto 0) => DDR_addr(14 downto 0),
@@ -256,15 +139,13 @@ PWM_Manager_6CH_i: component PWM_Manager_6CH
       pwm_CH04_out_T => pwm_CH04_out_T,
       pwm_CH06_out_L => pwm_CH06_out_L,
       pwm_CH06_out_R => pwm_CH06_out_R,
-      pwm_in_ch01 => J905_09, -- Union entre restriccion y diseño
+      pwm_in_ch01 => J905_09,
       pwm_in_ch02 => J905_10,
       pwm_in_ch03 => J905_11,
       pwm_in_ch04 => J905_12,
       pwm_in_ch05 => J905_15,
-      pwm_in_ch06 => J905_15,
+      pwm_in_ch06 => J905_16,
       uart_DBG0_rxd => uart_DBG0_rxd,
       uart_DBG0_txd => uart_DBG0_txd
     );
 end STRUCTURE;
-```
-
