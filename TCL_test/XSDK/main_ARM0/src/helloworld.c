@@ -34,7 +34,7 @@ void init_interrupt(void);
 
 static XScuGic IntcInstance; // Instancia para manejador de interrupciones
 static XGpio Gpio; /* The Instance of the GPIO Driver */
-static handler_PWMManager CH01, CH02, CH03, CH04;
+static handler_PWMManager CH01, CH02, CH03, CH04, CH06;
 static handler_ModeManager Mode_Stick;
 
 volatile u8 flag_TMR10Hz = 0;
@@ -45,28 +45,76 @@ int main()
     init_interrupt();
     init_GPIO();
 
-    /*registro_u32 PWM_MODE;
-    PWM_MODE.registros_u16.LSR = 1100;
-	PWM_MODE.registros_u16.MSR = 1940;
-	Xil_Out32(r_PWM_Mode,PWM_MODE.regbase);*/
     init_IP_Mode_Manager(&Mode_Stick, DIR_BASE_IP_MODE_MANAGER);
     set_PWM_Manual(&Mode_Stick, 1100);
     set_PWM_Auto(&Mode_Stick, 1940);
 
     init_IP_PWM_Manager(&CH01,  DIR_BASE_IP_PWM_MANAGER_CH01);
-    set_Min_PWM(&CH01, 1000);
-    set_Max_PWM(&CH01, 2000);
+    set_Min_PWM(&CH01, 1061);
+    set_Max_PWM(&CH01, 1991);
+
+    init_IP_PWM_Manager(&CH02,  DIR_BASE_IP_PWM_MANAGER_CH02);
+    set_Min_PWM(&CH02, 1000);
+    set_Max_PWM(&CH02, 2000);
+
+    init_IP_PWM_Manager(&CH03,  DIR_BASE_IP_PWM_MANAGER_CH03);
+    set_Min_PWM(&CH03, 1000);
+    set_Max_PWM(&CH03, 2000);
+
+    init_IP_PWM_Manager(&CH04,  DIR_BASE_IP_PWM_MANAGER_CH04);
+    set_Min_PWM(&CH04, 1000);
+    set_Max_PWM(&CH04, 2000);
+
+    /*init_IP_PWM_Manager(&CH06,  DIR_BASE_IP_PWM_MANAGER_CH06);
+    set_Min_PWM(&CH06, 1000);
+    set_Max_PWM(&CH06, 2000);*/
 
     set_Direct_Value(&CH01, ch_Right, 1005);
     set_Direct_Value(&CH01, ch_Left, 1015);
 
+    set_Direct_Value(&CH02, ch_Right, 1005);
+    set_Direct_Value(&CH02, ch_Left, 1015);
+
+    set_Direct_Value(&CH03, ch_Right, 1005);
+    set_Direct_Value(&CH03, ch_Left, 1015);
+
+    set_Direct_Value(&CH04, ch_Right, 1005);
+    set_Direct_Value(&CH04, ch_Left, 1015);
+
+    /*set_Direct_Value(&CH06, ch_Right, 1005);
+    set_Direct_Value(&CH06, ch_Left, 1015);*/
+
     set_Inversion(&CH01, ch_Right, channel_Inverted);
     set_Inversion(&CH01, ch_Left, channel_NotInverted);
+
+    set_Inversion(&CH02, ch_Right, channel_Inverted);
+    set_Inversion(&CH02, ch_Left, channel_NotInverted);
+
+    set_Inversion(&CH03, ch_Right, channel_Inverted);
+    set_Inversion(&CH03, ch_Left, channel_NotInverted);
+
+    set_Inversion(&CH04, ch_Right, channel_Inverted);
+    set_Inversion(&CH04, ch_Left, channel_NotInverted);
 
     set_Output_Type(&CH01, ch_Right, pwm_out_processed);
     set_Output_Type(&CH01, ch_Left, pwm_out_processed);
 
+    set_Output_Type(&CH02, ch_Right, pwm_out_processed);
+    set_Output_Type(&CH02, ch_Left, pwm_out_processed);
+
+    set_Output_Type(&CH03, ch_Right, pwm_out_processed);
+    set_Output_Type(&CH03, ch_Left, pwm_out_processed);
+
+    set_Output_Type(&CH04, ch_Right, pwm_out_processed);
+    set_Output_Type(&CH04, ch_Left, pwm_out_processed);
+
+    /*set_Output_Type(&CH06, ch_Right, pwm_out_processed);
+    set_Output_Type(&CH06, ch_Left, pwm_out_processed);*/
+
     set_ARM_Actuation(&CH01, 1750);
+    set_ARM_Actuation(&CH02, 1751);
+    set_ARM_Actuation(&CH03, 1752);
+    set_ARM_Actuation(&CH04, 1753);
 
     printf("Main loop:\n\r");
 
@@ -76,14 +124,37 @@ int main()
 		{
 			flag_TMR10Hz = 0;
 
-			printf(" Valor de modo: 0x%x \t PWM Modo: %d \r\n",
+
+			printf("************************************************************************* \n");
+			printf(" Valor de modo: 0x%x \t PWM Modo: %d \n",
 					get_Mode_Stick(&Mode_Stick),
 					get_Mode_PWM(&Mode_Stick));
-			printf(" PWMC \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+			printf(" PWMC_1 \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
 					get_RC_Input_Value(&CH01),
 					get_Inverter_Value(&CH01),
 					get_Output_Value(&CH01, ch_Left),
 					get_Output_Value(&CH01, ch_Right));
+			printf(" PWMC_2 \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+					get_RC_Input_Value(&CH02),
+					get_Inverter_Value(&CH02),
+					get_Output_Value(&CH02, ch_Left),
+					get_Output_Value(&CH02, ch_Right));
+			printf(" PWMC_3 \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+					get_RC_Input_Value(&CH03),
+					get_Inverter_Value(&CH03),
+					get_Output_Value(&CH03, ch_Left),
+					get_Output_Value(&CH03, ch_Right));
+			printf(" PWMC_4 \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+					get_RC_Input_Value(&CH04),
+					get_Inverter_Value(&CH04),
+					get_Output_Value(&CH04, ch_Left),
+					get_Output_Value(&CH04, ch_Right));
+			/*printf(" PWMC_6 \t PWM_IN: %d \t PWM_INV: %d \t PWM_L: %d \t PWM_R: %d \n",
+					get_RC_Input_Value(&CH06),
+					get_Inverter_Value(&CH06),
+					get_Output_Value(&CH06, ch_Left),
+					get_Output_Value(&CH06, ch_Right));*/
+			printf("************************************************************************* \n");
 		}
     }
 
