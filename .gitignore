@@ -104,3 +104,5 @@ hw_outputs/
 ##############
 !*.md
 !*.png
+TCL_test/XSDK/fsbl/
+TCL_test/XSDK/fsbl_bsp/
